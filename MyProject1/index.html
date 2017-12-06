@@ -11,15 +11,19 @@
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script src="http://tizen.org/sensor/healthinfo/accelerometer"></script>
     <script src="js/main.js"></script>
+    <script src="js/jquery-3.2.1.slim.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 </head>
 
 <body>
     <div id="main" class="page">
-    	<button class="start">Start accelerometer</button>
- 
-        <div class="contents" id="accel_x"><p>1</p></div>
-        <div class="contents" id='accel_y'><p>2</p></div>
-        <div class="contents" id='accel_z'><p>3</p></div>
+		<form action="js/main.js" method='post'>
+			<button id='strt' onclick="Work()"><span>Start read accelerometer data</span></button>
+		</form>
+ 		<div id = 'acceler_data'></div>
+ 		<div class="contents" id="accel_x"><p> </p></div>
+		<div class="contents" id='accel_y'><p> </p></div>
+		<div class="contents" id='accel_z'><p> </p></div>
     </div>
 </body>
 

@@ -20,37 +20,20 @@
 //    });
 //};
 
+var Start = 0;
+
 var accelerCapability = tizen.systeminfo.getCapability ('http://tizen.org/feature/sensor.accelerometer');
-//var accelerMaxBatchCount;
-
-//function onsuccessCB(hardwareInfo)
-//{
-//	accelerMaxBatchCount = hardwareInfo.maxBatchCount;
-//}
-//accelerCapability.getSensorHardwareInfo(onsuccessCB);
-
-
-
 if (accelerCapability === true) {
-    //var accelerSensor = tizen.sensorservice.getDefaultSensor ('ACCELERATOR');
-    //alert("DONE!");
+	var accelerationSensor = tizen.sensorservice.getDefaultSensor("ACCELERATION");
+    alert("DONE!");
 }
-
-var accelerationSensor = tizen.sensorservice.getDefaultSensor("ACCELERATION");
 
 function onGetSuccessCB(sensorData)
 {
     console.log("######## Get acceleration sensor data ########");
     console.log("x: " + sensorData.x);
-    //document.write("x: "+ String(sensorData.x));
     console.log("y: " + sensorData.y);
-    //document.write("y: "+ String(sensorData.y)+"\n");
     console.log("z: " + sensorData.z);
-    //document.write("z: "+ String(sensorData.z)+"\n");
-    
-    document.getElementById('accel_x').innerHTML = '<p> x:'+ sensorData.x+'</p>';
-    document.getElementById('accel_y').innerHTML = '<p> y:'+ sensorData.y+'</p>';
-    document.getElementById('accel_z').innerHTML = '<p> z:'+ sensorData.z+'</p>';
 }
 
 function onerrorCB(error)
@@ -80,34 +63,61 @@ function onchangedCB(sensorData) {
     };
     
 }
-//console.log(accelerMaxBatchCount);
 accelerationSensor.setChangeListener(onchangedCB, 10);
-alert("done");
-accelerationSensor.start(onsuccessCB);
 
-function isInternet() {
-    var xhr = new XMLHttpRequest();
-    var file = 'https://www.yandex.ru/';
 
-    xhr.open('HEAD', file , false);
-
-    try {
-
-        xhr.send();
-
-        if (xhr.status >= 200 && xhr.status < 304) {
-            console.log("Internet!");
-        } else {
-            console.log("Internet error");
-        }
-    } catch (e) {
-        console.log("######## No connection ########");
-        console.log(e);
-        console.log(e.name);
-        console.log(e.message);
-        console.log("############################");
-        
-    }
+function Work() {
+	if(Start === 0) {
+		//Connection();
+		Start = 1;
+		document.getElementById('strt').innerHTML = '<span>Stop read accelerometer data</span>';
+		document.getElementById('acceler_data').innerHTML = '<p> </p>';
+		accelerationSensor.start(onsuccessCB);
+	}
+	else {
+		Start = 0;
+		document.getElementById('strt').innerHTML = '<span>Start read accelerometer data</span>';
+		accelerationSensor.stop();
+		document.getElementById('acceler_data').innerHTML = '<p> Click the bottom to start read accelerometer data</p>';
+	}
 }
 
-isInternet();
+//var req = ({ 
+//	method: 'GET',
+//	url: 'http://yandex.ru'
+//});
+//
+//$http(req).then(function successCallback(errorData) {
+//	alert("connection");
+//}, 
+//function errorCallback(errorData) {
+//	alert("no connection");
+//});
+
+//
+//function isInternet() {
+//    var xhr = new XMLHttpRequest();
+//    var file = 'https://www.yandex.ru/';
+//
+//    xhr.open('HEAD', file , false);
+//
+//    try {
+//
+//        xhr.send();
+//
+//        if (xhr.status >= 200 && xhr.status < 304) {
+//            console.log("Internet!");
+//        } else {
+//            console.log("Internet error");
+//        }
+//    } catch (e) {
+//        console.log("######## No connection ########");
+//        console.log(e);
+//        console.log(e.name);
+//        console.log(e.message);
+//        console.log("############################");
+//        
+//    }
+//}
+//
+//isInternet();
