@@ -13,7 +13,7 @@ body {
     display: table;
 }
 .contents {
-    display: table-cell;
+    /*display: table-cell;*/
     vertical-align: middle;
     text-align: center;
     -webkit-tap-highlight-color: transparent;
@@ -22,4 +22,12 @@ body {
     font-weight: bold;
     font-size: 5em;
     color: red;
+}
+
+.start {
+	vertical-align: middle;
+	text-align: center;
+	width: 50%;
+	height: 15%;
+	font-size: 18px;
 }

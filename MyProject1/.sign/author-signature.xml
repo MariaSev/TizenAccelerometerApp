@@ -8,7 +8,7 @@
 </Reference>
 <Reference URI="css%2Fstyle.css">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>EGyn3Bj4FXoKeLTbqvuVnVIyUusvrt3pGjwqxDndSpo=</DigestValue>
+<DigestValue>0xIWyGzoF8rc4z+vedikvGmPhVBZC8moLxfi8P+682o=</DigestValue>
 </Reference>
 <Reference URI="icon.png">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -20,11 +20,11 @@
 </Reference>
 <Reference URI="index.html">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>sZizAipL96See05ESu4oQLy3RzCszjZ7KKu663r74MM=</DigestValue>
+<DigestValue>CLqdI83ie48rBEE1O2i7SW2bB+nTeB0iUV+7H7fPb6Y=</DigestValue>
 </Reference>
 <Reference URI="js%2Fmain.js">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>eph/TycZRGVL291RQUzfxHsFTzRR4poRFQJqvf2bu6k=</DigestValue>
+<DigestValue>NmzruDQ8DwtT40XfzjFt9weu+zJDUCKqnJa41HKeMSo=</DigestValue>
 </Reference>
 <Reference URI="#prop">
 <Transforms>
@@ -35,9 +35,9 @@
 </Reference>
 </SignedInfo>
 <SignatureValue>
-X+O81lgmd3t0gjp4CkjrtGwnSF590+GnOtB0nOEJmT0ifwEoebZtuji7kzvAABLEqFJphMRKwtPg
-vPvTyKJiJxV6k4UNvHye2EUYER4Ox3c1WpIWPD5M9gETz9GP8EplzY23F4cstnweJzrLfP9JdJFT
-yQxxNxvZllmb8pqQRrI=
+EG9ontSh5cXVl7bPeCtAcN6BZzCj/bQvvIXeHl6XDSLdSYbU06zRTY+KsWNQqDC5wc7B+MzE7cfR
+FzGqS6srkg3Eu6MSo+MTQcda8+pMYbnOf0LQMdGkOiBfAjc8F+eGrkRAV9FvQTLxaD5urePn5niq
+nJ7Th9OiQo6UXBK+8/A=
 </SignatureValue>
 <KeyInfo>
 <X509Data>
