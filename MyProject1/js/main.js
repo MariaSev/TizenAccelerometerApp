@@ -1,78 +1,84 @@
-//window.onload = function() {
-//    // TODO:: Do your initialization job
-//
-//    // add eventListener for tizenhwkey
-//    document.addEventListener('tizenhwkey', function(e) {
-//        if (e.keyName === "back") {
-//            try {
-//                tizen.application.getCurrentApplication().exit();
-//            } catch (ignore) {}
-//        }
-//    });
-//
-//    // Sample code
-//    var mainPage = document.querySelector('#main');
-//
-//    mainPage.addEventListener("click", function() {
-//        var contentText = document.querySelector('#content-text');
-//
-//        contentText.innerHTML = (contentText.innerHTML === "Basic") ? "Tizen" : "Basic";
-//    });
-//};
-
 var Start = 0;
+var previos = 0; // flag means Internet acces during previous measuring  
 
 var accelerCapability = tizen.systeminfo.getCapability ('http://tizen.org/feature/sensor.accelerometer');
-if (accelerCapability === true) {
-	var accelerationSensor = tizen.sensorservice.getDefaultSensor("ACCELERATION");
-    alert("DONE!");
+
+if (accelerCapability === true) { var accelerationSensor = tizen.sensorservice.getDefaultSensor("ACCELERATION"); } 
+else { alert("NO ACCELEROMETER!"); }
+
+function SendData(body) {
+	var req = new XMLHttpRequest();
+	
+	req.open('POST', 'http://localhost:2000/post');
+	req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	
+	req.onreadystatechange = function() {
+		if(req.readyState === 4) {
+			if(req.state === 200) {
+				console.log(req.responceText);
+			}
+		}
+	};
+	req.send(body);
 }
 
-function onGetSuccessCB(sensorData)
+function onSuccess()
 {
-    console.log("######## Get acceleration sensor data ########");
-    console.log("x: " + sensorData.x);
-    console.log("y: " + sensorData.y);
-    console.log("z: " + sensorData.z);
+    console.log("######## Starting get acceleration sensor data ########");
+    accelerationSensor.setChangeListener(onchanged, 10);
 }
 
-function onerrorCB(error)
+function onerror(error)
 {
     console.log("error occurred: " + error.message);
 }
 
-function onsuccessCB()
+function connected()
 {
-    console.log("acceleration sensor start");
-    accelerationSensor.getAccelerationSensorData(onGetSuccessCB, onerrorCB);
+    console.log("acceleration sensor connected");
+    accelerationSensor.getAccelerationSensorData(onSuccess, onerror);
 }
 
-function onchangedCB(sensorData) {
+function onchanged(sensorData)
+{
     console.log('sensor data: ' + sensorData.x);
     console.log('sensor data: ' + sensorData.y);
     console.log('sensor data: ' + sensorData.z);
     
+    var data = { 'time': Date(), 'x': sensorData.x, 'y': sensorData.y, 'z': sensorData.z };
+
+    if(navigator.onLine && !previous) { // clean database
+    	sendFromDB();
+    }
+    if(navigator.onLine) {
+    	console.log('internet connection');  	
+    	var body = 'time=' + encodeURIComponent(data.time)+'&x='+encodeURIComponent(data.x)+'&y='+encodeURIComponent(data.y)+'&z='+encodeURIComponent(data.z);
+    	SendData(body);
+    	previous = 1;
+    }
+    else {
+    	writeAccData(data);
+    	previous = 0;
+    }    
     document.getElementById('accel_x').innerHTML = '<p> x:'+ sensorData.x+'</p>';
     document.getElementById('accel_y').innerHTML = '<p> y:'+ sensorData.y+'</p>';
     document.getElementById('accel_z').innerHTML = '<p> z:'+ sensorData.z+'</p>';
+    
     window.onload = function(){
     	var a = document.getElementsByTagName('span')[0];
         a.innerHTML = String(sensorData.x);
         a.innerHTML = String(sensorData.y);
         a.innerHTML = String(sensorData.z);
-    };
-    
+    };   
 }
-accelerationSensor.setChangeListener(onchangedCB, 10);
 
-
-function Work() {
+function Work()
+{
 	if(Start === 0) {
-		//Connection();
 		Start = 1;
 		document.getElementById('strt').innerHTML = '<span>Stop read accelerometer data</span>';
 		document.getElementById('acceler_data').innerHTML = '<p> </p>';
-		accelerationSensor.start(onsuccessCB);
+		accelerationSensor.start(connected);
 	}
 	else {
 		Start = 0;
@@ -82,42 +88,75 @@ function Work() {
 	}
 }
 
-//var req = ({ 
-//	method: 'GET',
-//	url: 'http://yandex.ru'
-//});
-//
-//$http(req).then(function successCallback(errorData) {
-//	alert("connection");
-//}, 
-//function errorCallback(errorData) {
-//	alert("no connection");
-//});
+window.onload = function(){
+	document.getElementById('strt').onclick = Work;
+};
 
-//
-//function isInternet() {
-//    var xhr = new XMLHttpRequest();
-//    var file = 'https://www.yandex.ru/';
-//
-//    xhr.open('HEAD', file , false);
-//
-//    try {
-//
-//        xhr.send();
-//
-//        if (xhr.status >= 200 && xhr.status < 304) {
-//            console.log("Internet!");
-//        } else {
-//            console.log("Internet error");
-//        }
-//    } catch (e) {
-//        console.log("######## No connection ########");
-//        console.log(e);
-//        console.log(e.name);
-//        console.log(e.message);
-//        console.log("############################");
-//        
-//    }
-//}
-//
-//isInternet();
+function connectDB(f){
+	var request = indexedDB.open('AccelerometerBase', 1);
+	request.onerror = function(err){ console.log(err); };
+	
+	request.onsuccess = function(){ f(request.result); };
+	
+	request.onupgradeneeded = function(e){
+		e.currentTarget.result.createObjectStore('AccelerometerStore', { keyPath: "time" });
+		connectDB(f);
+	};
+}
+
+function writeAccData(data){
+	connectDB(function(db){
+	    console.log(data.time);
+		var request = db.transaction('AccelerometerStore', "readwrite").objectStore('AccelerometerStore').add(data);
+		
+		request.onerror = function(err){ console.log(err); };
+		
+		request.onsuccess = function(){
+			console.log("~~request.onsuccess",request.result);
+			var request2 = db.transaction('AccelerometerStore', "readonly").objectStore('AccelerometerStore').get(data.time);
+			request2.onsuccess = function(){ console.log(request.result); };
+		};
+	});
+}
+
+function printData(){
+	connectDB(function(db){
+		var objectStore = db.transaction("AccelerometerStore").objectStore("AccelerometerStore");
+
+		objectStore.openCursor().onsuccess = function(event) {
+		  var cursor = event.target.result;
+		  if (cursor) {
+			  console.log(">>>");
+			  console.log(cursor.key);
+			  console.log(cursor.value.x);
+			  console.log(cursor.value.y);
+			  console.log(cursor.value.z);
+		    cursor.continue();
+		  }
+		  else {
+		    alert("No more entries!");
+		  }
+			
+		};
+	});
+}
+
+function sendFromDB(){
+	connectDB(function(db){
+		var objectStore = db.transaction("AccelerometerStore").objectStore("AccelerometerStore");
+		objectStore.openCursor().onsuccess = function(event) {
+		  var cursor = event.target.result;
+		  if (cursor) {
+			  var data = {'time':cursor.key, 'x':cursor.value.x, 'y':cursor.value.y, 'z':cursor.value.z};
+			  SendData(body);
+			  objectStore.delete(cursor.key);
+		      cursor.continue();
+		  }	
+	   }
+   });
+}
+
+
+
+
+
